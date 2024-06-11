@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_series/screens/auth/email%20auth/signup_screen.dart';
+import 'package:firebase_series/screens/home_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,6 +16,32 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+      duration: const Duration(seconds: 2),
+    ));
+  }
+
+  void login() async {
+    // Perform login logic here
+    final String email = emailController.text.trim();
+    final String password = passwordController.text.trim();
+
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      if (userCredential.user != null) {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushReplacement(context,
+            CupertinoPageRoute(builder: (context) => const HomeScreen()));
+      }
+    } on FirebaseAuthException catch (ex) {
+      _showSnackBar(ex.code);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     // Validation passed, proceed with login
-                    _performLogin();
+                    login();
                   }
                 },
                 child: const Text('Login'),
@@ -72,27 +101,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignupScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const SignupScreen()),
                   );
                 },
-                child: Text('Create an account'),
+                child: const Text('Create an account'),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  void _performLogin() {
-    // Perform login logic here
-    final String email = emailController.text;
-    final String password = passwordController.text;
-
-    // Placeholder for login logic, replace it with your actual authentication logic
-    print('Email: $email');
-    print('Password: $password');
-
-    // Navigate to next screen after successful login
   }
 }

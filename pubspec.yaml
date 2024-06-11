@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   fast_ui_kit: ^1.0.17
   firebase_core: ^2.30.1
-  firebase_auth_rest: ^2.0.4
+  firebase_auth: ^4.20.0
 
 dev_dependencies:
   flutter_test:
